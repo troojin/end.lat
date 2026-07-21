@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Shortener</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        background: #000;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        background: #111;
+        padding: 30px;
+        border-radius: 15px;
+        width: 350px;
+        text-align: center;
+        border: 1px solid #222;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        background: #000;
+        border: 1px solid #333;
+        color: white;
+        border-radius: 8px;
+        outline: none;
+    }
+
+    button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 12px;
+        background: white;
+        color: black;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #ddd;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        background: #0a0a0a;
+        border-radius: 8px;
+        word-break: break-all;
+    }
+
+    a {
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Shorten Link</h1>
+
+    <input id="url" placeholder="Enter URL...">
+
+    <button onclick="shorten()">Shorten</button>
+
+    <div class="result" id="result">
+        Your short link will appear here
+    </div>
+</div>
+
+
+<script>
+function shorten() {
+    const url = document.getElementById("url").value;
+
+    if (!url) {
+        alert("Enter a URL");
+        return;
+    }
+
+    const id = Math.random().toString(36).substring(2, 8);
+
+    const shortUrl = "short.ly/" + id;
+
+    document.getElementById("result").innerHTML =
+        `<a href="${url}" target="_blank">${shortUrl}</a>`;
+}
+</script>
+
+</body>
+</html>
