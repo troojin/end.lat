@@ -2,104 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>End.lat Shortener</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>End.lat — Shorten a link</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* {
-    box-sizing: border-box;
-    font-family: Arial;
-}
+  :root {
+    --bg:       #000000;
+    --surface:  #111111;
+    --border:   #262626;
+    --border-2: #333333;
+    --text:     #F5F5F5;
+    --muted:    #8A8A8A;
+    --accent:   #FFFFFF;
+    --ok:       #4ADE80;
+    --err:      #F87171;
+    --radius:   14px;
+  }
 
-body {
-    background: #000;
-    color: white;
-    height: 100vh;
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-}
+    padding: 24px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
 
-.box {
-    background: #111;
-    padding: 30px;
-    width: 350px;
-    border-radius: 15px;
-    border: 1px solid #222;
-}
+  .box {
+    width: 380px;
+    max-width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+  }
 
-h1 {
+  h1 {
     text-align: center;
-}
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    background: #000;
-    color: white;
-    border: 1px solid #333;
-    border-radius: 8px;
-}
+  .tagline {
+    text-align: center;
+    margin: 0 0 26px;
+    font-size: 13px;
+    color: var(--muted);
+  }
 
-button {
+  label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  input#url {
     width: 100%;
-    margin-top: 15px;
+    padding: 12px 14px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  input#url::placeholder { color: #555; }
+
+  input#url:focus {
+    border-color: var(--border-2);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  }
+
+  input#url.error {
+    border-color: var(--err);
+    box-shadow: 0 0 0 3px rgba(248,113,113,0.12);
+  }
+
+  .hint {
+    margin: 8px 2px 0;
+    font-size: 12px;
+    color: var(--err);
+    min-height: 15px;
+  }
+
+  button#go {
+    width: 100%;
+    margin-top: 14px;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 9px;
     border: none;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
-}
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
 
-.result {
+  button#go:hover { opacity: 0.88; }
+  button#go:active { transform: scale(0.98); }
+  button#go:disabled { opacity: 0.5; cursor: progress; }
+
+  .result {
     margin-top: 20px;
-    background: #080808;
-    padding: 10px;
-    border-radius: 8px;
-    word-break: break-all;
-}
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 12px 14px;
+  }
+  .result.show { display: flex; }
+
+  .result a {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    color: var(--ok);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .result a:hover { text-decoration: underline; }
+
+  .copy-btn {
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 7px 11px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .copy-btn:hover { background: #1c1c1c; }
+  .copy-btn.copied { color: var(--ok); border-color: var(--ok); }
+
+  .placeholder {
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
 </style>
 </head>
-
 <body>
 
 <div class="box">
-    <h1>End.lat</h1>
+  <h1>End.lat</h1>
+  <p class="tagline">Paste a link, get a short one back.</p>
 
-    <input id="url" placeholder="Paste URL">
+  <label for="url">URL</label>
+  <input id="url" type="text" placeholder="https://example.com/a/very/long/path" autocomplete="off" spellcheck="false">
+  <div class="hint" id="hint"></div>
 
-    <button onclick="shorten()">Shorten</button>
+  <button id="go" onclick="shorten()">Shorten</button>
 
-    <div class="result" id="result">
-        Your link will appear here
-    </div>
+  <div class="result" id="resultBox">
+    <a id="shortLink" href="#" target="_blank" rel="noopener"></a>
+    <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
+  </div>
+
+  <div class="placeholder" id="placeholder">Your link will appear here</div>
 </div>
 
-
 <script>
-async function shorten() {
-    const url = document.getElementById("url").value;
+const urlInput    = document.getElementById('url');
+const hint        = document.getElementById('hint');
+const goBtn       = document.getElementById('go');
+const resultBox   = document.getElementById('resultBox');
+const placeholder = document.getElementById('placeholder');
+const shortLink   = document.getElementById('shortLink');
+const copyBtn     = document.getElementById('copyBtn');
 
-    if (!url) {
-        alert("Enter a URL");
-        return;
-    }
-
-    try {
-        const res = await fetch(
-            "https://end.lat/api?url=" + encodeURIComponent(url)
-        );
-
-        const data = await res.json();
-
-        document.getElementById("result").innerHTML =
-            `<a href="${data.short}" target="_blank">${data.short}</a>`;
-
-    } catch (err) {
-        document.getElementById("result").innerHTML =
-            "API error - check end.lat API endpoint";
-    }
+function setError(msg) {
+  hint.textContent = msg;
+  urlInput.classList.toggle('error', !!msg);
 }
-</script>
 
+function isLikelyUrl(value) {
+  try {
+    const withScheme = /^https?:\/\//i.test(value) ? value : 'https://' + value;
+    new URL(withScheme);
+    return withScheme;
+  } catch {
+    return null;
+  }
+}
+
+async function shorten() {
+  setError('');
+  const raw = urlInput.value.trim();
+
+  if (!raw) {
+    setError('Enter a URL first.');
+    urlInput.focus();
+    return;
+  }
+
+  const normalized = isLikelyUrl(raw);
+  if (!normalized) {
+    setError("That doesn't look like a valid URL.");
+    return;
+  }
+
+  goBtn.disabled = true;
+  goBtn.textContent = 'Shortening…';
+  resultBox.classList.remove('show');
+  placeholder.style.display = 'block';
+
+  try {
+    const res = await fetch('https://end.lat/api?url=' + encodeURIComponent(normalized));
+    if (!res.ok) throw new Error('bad status');
+    const data = await res.json();
+    if (!data || !data.short) throw new Error('no short link in response');
+
+    shortLink.textContent = data.short;
+    shortLink.href = data.short;
+
+    placeholder.style.display = 'none';
+    resultBox.classList.add('show');
+  } catch (err) {
+    setError("Couldn't reach the end.lat API — try again in a moment.");
+  } finally {
+    goBtn.disabled = false;
+    goBtn.textContent = 'Shorten';
+  }
+}
+
+async function copyLink() {
+  const text = shortLink.textContent;
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.textContent = 'Copied';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy';
+      copyBtn.classList.remove('copied');
+    }, 1600);
+  } catch {
+    copyBtn.textContent = 'Failed';
+  }
+}
+
+urlInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') shorten();
+});
+urlInput.addEventListener('input', () => setError(''));
+</script>
 </body>
 </html>
