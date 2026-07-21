@@ -2,95 +2,81 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Link Shortener</title>
+<title>End.lat Shortener</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
+* {
+    box-sizing: border-box;
+    font-family: Arial;
+}
 
-    body {
-        margin: 0;
-        height: 100vh;
-        background: #000;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+body {
+    background: #000;
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    .container {
-        background: #111;
-        padding: 30px;
-        border-radius: 15px;
-        width: 350px;
-        text-align: center;
-        border: 1px solid #222;
-    }
+.box {
+    background: #111;
+    padding: 30px;
+    width: 350px;
+    border-radius: 15px;
+    border: 1px solid #222;
+}
 
-    h1 {
-        margin-bottom: 20px;
-    }
+h1 {
+    text-align: center;
+}
 
-    input {
-        width: 100%;
-        padding: 12px;
-        background: #000;
-        border: 1px solid #333;
-        color: white;
-        border-radius: 8px;
-        outline: none;
-    }
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #000;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
 
-    button {
-        margin-top: 15px;
-        width: 100%;
-        padding: 12px;
-        background: white;
-        color: black;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-    }
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
 
-    button:hover {
-        background: #ddd;
-    }
-
-    .result {
-        margin-top: 20px;
-        padding: 10px;
-        background: #0a0a0a;
-        border-radius: 8px;
-        word-break: break-all;
-    }
-
-    a {
-        color: white;
-    }
+.result {
+    margin-top: 20px;
+    background: #080808;
+    padding: 10px;
+    border-radius: 8px;
+    word-break: break-all;
+}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>Shorten Link</h1>
+<div class="box">
+    <h1>End.lat</h1>
 
-    <input id="url" placeholder="Enter URL...">
+    <input id="url" placeholder="Paste URL">
 
     <button onclick="shorten()">Shorten</button>
 
     <div class="result" id="result">
-        Your short link will appear here
+        Your link will appear here
     </div>
 </div>
 
 
 <script>
-function shorten() {
+async function shorten() {
     const url = document.getElementById("url").value;
 
     if (!url) {
@@ -98,12 +84,20 @@ function shorten() {
         return;
     }
 
-    const id = Math.random().toString(36).substring(2, 8);
+    try {
+        const res = await fetch(
+            "https://end.lat/api?url=" + encodeURIComponent(url)
+        );
 
-    const shortUrl = "short.ly/" + id;
+        const data = await res.json();
 
-    document.getElementById("result").innerHTML =
-        `<a href="${url}" target="_blank">${shortUrl}</a>`;
+        document.getElementById("result").innerHTML =
+            `<a href="${data.short}" target="_blank">${data.short}</a>`;
+
+    } catch (err) {
+        document.getElementById("result").innerHTML =
+            "API error - check end.lat API endpoint";
+    }
 }
 </script>
 
