@@ -239,7 +239,7 @@ async function shorten() {
   placeholder.style.display = 'block';
 
   try {
-    const res = await fetch('https://end.lat/api?url=' + encodeURIComponent(normalized));
+    const res = await fetch('/api?url=' + encodeURIComponent(normalized));
     if (!res.ok) throw new Error('bad status');
     const data = await res.json();
     if (!data || !data.short) throw new Error('no short link in response');
