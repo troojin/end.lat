@@ -1,19 +1,22 @@
-import { createClient } from "@supabase/supabase-js";
-
 export async function onRequestGet(context) {
   const { params, env } = context;
   const id = params.id;
 
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
+  const res = await fetch(
+    `${env.SUPABASE_URL}/rest/v1/links?id=eq.${encodeURIComponent(id)}&select=url`,
+    {
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+      },
+    }
+  );
 
-  const { data, error } = await supabase
-    .from("links")
-    .select("url")
-    .eq("id", id)
-    .single();
-
-  if (!error && data?.url) {
-    return Response.redirect(data.url, 302);
+  if (res.ok) {
+    const rows = await res.json();
+    if (rows.length > 0) {
+      return Response.redirect(rows[0].url, 302);
+    }
   }
 
   return new Response(notFoundPage(), {

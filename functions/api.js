@@ -1,5 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
-
 const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 function makeId() {
@@ -32,24 +30,28 @@ export async function onRequestGet(context) {
     return Response.json({ error: "That's not a valid http(s) URL." }, { status: 400 });
   }
 
-  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
   const baseUrl = env.SITE_URL || "https://end.lat";
 
   for (let i = 0; i < 5; i++) {
     const id = makeId();
 
-    const { error } = await supabase
-      .from("links")
-      .insert({ id, url })
-      .select()
-      .single();
+    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/links`, {
+      method: "POST",
+      headers: {
+        apikey: env.SUPABASE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ id, url }),
+    });
 
-    if (!error) {
+    if (res.ok) {
       return Response.json({ short: `${baseUrl}/${id}`, id });
     }
 
-    if (error.code !== "23505") {
-      console.error(error);
+    if (res.status !== 409) {
+      console.error(await res.text());
       return Response.json({ error: "Could not create short link." }, { status: 500 });
     }
   }
