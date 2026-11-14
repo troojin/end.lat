@@ -33,7 +33,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 24px 16px;
     background: var(--bg);
     color: var(--text);
     font-family: var(--font);
@@ -43,17 +43,17 @@
   }
 
   .box {
-    width: 380px;
+    width: 410px;
     max-width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 32px 28px;
+    padding: 30px 26px;
   }
 
   h1 {
     text-align: center;
-    font-size: 23px;
+    font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.03em;
     margin: 0 0 6px;
@@ -80,26 +80,82 @@
 
   .tagline {
     text-align: center;
-    margin: 0 0 26px;
+    margin: 0 0 20px;
     font-size: 13px;
     font-weight: 400;
     color: var(--muted);
     letter-spacing: -0.005em;
   }
 
-  label {
+  .tabs {
+    display: flex;
+    background: var(--bg);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border-2);
+  }
+
+  .tab-btn:hover:not(.active) {
+    color: var(--text);
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
     display: block;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 7px;
   }
 
-  input#url {
+  .optional-tag {
+    font-size: 10px;
+    font-weight: 500;
+    color: #555;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  input.text-input {
     width: 100%;
-    padding: 12px 14px;
+    padding: 11px 13px;
     background: var(--bg);
     color: var(--text);
     border: 1px solid var(--border);
@@ -111,27 +167,75 @@
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  input#url::placeholder { color: #555; }
+  input.text-input::placeholder { color: #555; }
 
-  input#url:focus {
+  input.text-input:focus {
     border-color: var(--border-2);
     box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
   }
 
-  input#url.error {
+  input.text-input.error {
     border-color: var(--err);
     box-shadow: 0 0 0 3px rgba(248,113,113,0.12);
   }
 
+  .prefix-input-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .prefix-input-wrap:focus-within {
+    border-color: var(--border-2);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  }
+
+  .prefix-input-wrap.error {
+    border-color: var(--err);
+    box-shadow: 0 0 0 3px rgba(248,113,113,0.12);
+  }
+
+  .prefix-label {
+    padding: 11px 0 11px 13px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .prefix-input-wrap input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 13px 11px 4px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13.5px;
+    font-weight: 400;
+    outline: none;
+  }
+
+  .prefix-input-wrap input::placeholder { color: #555; }
+
   .hint {
-    margin: 8px 2px 0;
+    margin: 6px 2px 0;
     font-size: 12px;
     font-weight: 500;
     color: var(--err);
-    min-height: 15px;
+    min-height: 16px;
+    line-height: 1.3;
   }
 
-  button#go {
+  .hint.ok {
+    color: var(--ok);
+  }
+
+  button.primary-btn {
     width: 100%;
     margin-top: 14px;
     padding: 12px;
@@ -147,12 +251,12 @@
     transition: opacity 0.15s ease, transform 0.1s ease;
   }
 
-  button#go:hover { opacity: 0.88; }
-  button#go:active { transform: scale(0.98); }
-  button#go:disabled { opacity: 0.5; cursor: progress; }
+  button.primary-btn:hover { opacity: 0.88; }
+  button.primary-btn:active { transform: scale(0.98); }
+  button.primary-btn:disabled { opacity: 0.5; cursor: progress; }
 
   .result {
-    margin-top: 20px;
+    margin-top: 18px;
     display: none;
     align-items: center;
     gap: 8px;
@@ -178,7 +282,14 @@
   }
   .result a:hover { text-decoration: underline; }
 
-  .copy-btn {
+  .btn-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .copy-btn, .edit-link-btn {
     flex-shrink: 0;
     background: var(--surface);
     border: 1px solid var(--border-2);
@@ -189,19 +300,130 @@
     padding: 7px 11px;
     border-radius: 7px;
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   }
-  .copy-btn:hover { background: #1c1c1c; }
+  .copy-btn:hover, .edit-link-btn:hover { background: #1c1c1c; }
   .copy-btn.copied { color: var(--ok); border-color: var(--ok); }
 
   .placeholder {
-    margin-top: 20px;
+    margin-top: 18px;
     font-family: var(--font);
     font-size: 13px;
     font-weight: 400;
     color: var(--muted);
     text-align: center;
   }
+
+  .history-section {
+    width: 410px;
+    max-width: 100%;
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    display: none;
+  }
+
+  .history-section.show {
+    display: block;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .history-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .history-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s ease;
+  }
+  .history-clear-btn:hover { color: var(--err); }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+  }
+
+  .history-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .history-link {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ok);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .history-link:hover { text-decoration: underline; }
+
+  .history-url {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .history-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .icon-btn:hover { background: #1c1c1c; }
+  .icon-btn.copied { color: var(--ok); border-color: var(--ok); }
+  .icon-btn.remove:hover { color: var(--err); border-color: var(--err); }
 
   .gh-footer {
     margin-top: 20px;
@@ -248,18 +470,85 @@
   <h1>end.lat</h1>
   <p class="tagline">Paste a link, get a <span class="gradient-text">end.lat</span> one back.</p>
 
-  <label for="url">URL</label>
-  <input id="url" type="text" placeholder="https://example.com/a/very/long/path" autocomplete="off" spellcheck="false">
-  <div class="hint" id="hint"></div>
-
-  <button id="go" onclick="shorten()">Shorten</button>
-
-  <div class="result" id="resultBox">
-    <a id="shortLink" href="#" target="_blank" rel="noopener"></a>
-    <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
+  <div class="tabs">
+    <button class="tab-btn active" id="tabShortenBtn" onclick="switchTab('shorten')">Shorten</button>
+    <button class="tab-btn" id="tabEditBtn" onclick="switchTab('edit')">Edit Link</button>
   </div>
 
-  <div class="placeholder" id="placeholder">Your link will appear right here</div>
+  <div class="tab-pane active" id="paneShorten">
+    <div class="field">
+      <label for="url">Destination URL</label>
+      <input class="text-input" id="url" type="text" placeholder="https://example.com/a/very/long/path" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="field">
+      <label for="keyword">
+        <span>Custom Keyword</span>
+        <span class="optional-tag">optional</span>
+      </label>
+      <div class="prefix-input-wrap" id="keywordWrap">
+        <span class="prefix-label">end.lat/</span>
+        <input id="keyword" type="text" placeholder="my-custom-name" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="hint" id="shortenHint"></div>
+
+    <button class="primary-btn" id="go" onclick="shorten()">Shorten</button>
+
+    <div class="result" id="resultBox">
+      <a id="shortLink" href="#" target="_blank" rel="noopener"></a>
+      <div class="btn-group">
+        <button class="copy-btn" id="copyBtn" onclick="copyLink('shortLink', 'copyBtn')">Copy</button>
+        <button class="edit-link-btn" id="quickEditBtn" onclick="openInEditTab()">Edit</button>
+      </div>
+    </div>
+
+    <div class="placeholder" id="placeholder">Your link will appear right here</div>
+  </div>
+
+  <div class="tab-pane" id="paneEdit">
+    <div class="field">
+      <label for="editId">Short Link or Keyword</label>
+      <div class="prefix-input-wrap" id="editIdWrap">
+        <span class="prefix-label">end.lat/</span>
+        <input id="editId" type="text" placeholder="current-slug" autocomplete="off" spellcheck="false" onblur="fetchExistingLink()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="editUrl">New Destination URL</label>
+      <input class="text-input" id="editUrl" type="text" placeholder="https://example.com/new-path" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="field">
+      <label for="editNewKeyword">
+        <span>New Keyword</span>
+        <span class="optional-tag">optional</span>
+      </label>
+      <div class="prefix-input-wrap" id="editNewKeywordWrap">
+        <span class="prefix-label">end.lat/</span>
+        <input id="editNewKeyword" type="text" placeholder="leave blank to keep current" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+
+    <div class="hint" id="editHint"></div>
+
+    <button class="primary-btn" id="editBtn" onclick="updateLink()">Update Link</button>
+
+    <div class="result" id="editResultBox">
+      <a id="editShortLink" href="#" target="_blank" rel="noopener"></a>
+      <button class="copy-btn" id="editCopyBtn" onclick="copyLink('editShortLink', 'editCopyBtn')">Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="history-section" id="historySection">
+  <div class="history-header">
+    <span class="history-title">Recent Links</span>
+    <button class="history-clear-btn" onclick="clearHistory()">Clear all</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
 </div>
 
 <div class="gh-footer">
@@ -279,17 +568,73 @@
 </div>
 
 <script>
-const urlInput    = document.getElementById('url');
-const hint        = document.getElementById('hint');
-const goBtn       = document.getElementById('go');
-const resultBox   = document.getElementById('resultBox');
+const urlInput = document.getElementById('url');
+const keywordInput = document.getElementById('keyword');
+const shortenHint = document.getElementById('shortenHint');
+const goBtn = document.getElementById('go');
+const resultBox = document.getElementById('resultBox');
 const placeholder = document.getElementById('placeholder');
-const shortLink   = document.getElementById('shortLink');
-const copyBtn     = document.getElementById('copyBtn');
+const shortLink = document.getElementById('shortLink');
+const copyBtn = document.getElementById('copyBtn');
 
-function setError(msg) {
-  hint.textContent = msg;
+const editIdInput = document.getElementById('editId');
+const editUrlInput = document.getElementById('editUrl');
+const editNewKeywordInput = document.getElementById('editNewKeyword');
+const editHint = document.getElementById('editHint');
+const editBtn = document.getElementById('editBtn');
+const editResultBox = document.getElementById('editResultBox');
+const editShortLink = document.getElementById('editShortLink');
+const editCopyBtn = document.getElementById('editCopyBtn');
+
+const tabShortenBtn = document.getElementById('tabShortenBtn');
+const tabEditBtn = document.getElementById('tabEditBtn');
+const paneShorten = document.getElementById('paneShorten');
+const paneEdit = document.getElementById('paneEdit');
+
+const historySection = document.getElementById('historySection');
+const historyList = document.getElementById('historyList');
+
+let currentCreatedLink = null;
+
+function switchTab(mode) {
+  if (mode === 'shorten') {
+    tabShortenBtn.classList.add('active');
+    tabEditBtn.classList.remove('active');
+    paneShorten.classList.add('active');
+    paneEdit.classList.remove('active');
+  } else {
+    tabShortenBtn.classList.remove('active');
+    tabEditBtn.classList.add('active');
+    paneShorten.classList.remove('active');
+    paneEdit.classList.add('active');
+  }
+}
+
+function setShortenError(msg) {
+  shortenHint.textContent = msg;
+  shortenHint.classList.remove('ok');
   urlInput.classList.toggle('error', !!msg);
+}
+
+function setEditError(msg, isOk = false) {
+  editHint.textContent = msg;
+  editHint.classList.toggle('ok', isOk);
+  editUrlInput.classList.toggle('error', !!msg && !isOk);
+}
+
+function cleanSlug(val) {
+  if (!val) return '';
+  let str = val.trim();
+  try {
+    if (str.startsWith('http://') || str.startsWith('https://')) {
+      const parsed = new URL(str);
+      str = parsed.pathname;
+    }
+  } catch {}
+  str = str.replace(/^https?:\/\/[^/]+/i, '');
+  str = str.replace(/^end\.lat\/?/i, '');
+  str = str.replace(/^\/+|\/+$/g, '');
+  return str;
 }
 
 function isLikelyUrl(value) {
@@ -302,19 +647,137 @@ function isLikelyUrl(value) {
   }
 }
 
-async function shorten() {
-  setError('');
-  const raw = urlInput.value.trim();
+function getStoredLinks() {
+  try {
+    const data = localStorage.getItem('end_lat_links');
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
 
-  if (!raw) {
-    setError('Enter a URL first.');
+function saveStoredLink(item) {
+  try {
+    let list = getStoredLinks();
+    list = list.filter(l => l.id !== item.id && l.short !== item.short);
+    list.unshift(item);
+    if (list.length > 8) list = list.slice(0, 8);
+    localStorage.setItem('end_lat_links', JSON.stringify(list));
+    renderHistory();
+  } catch {}
+}
+
+function removeStoredLink(id) {
+  try {
+    let list = getStoredLinks();
+    list = list.filter(l => l.id !== id);
+    localStorage.setItem('end_lat_links', JSON.stringify(list));
+    renderHistory();
+  } catch {}
+}
+
+function clearHistory() {
+  try {
+    localStorage.removeItem('end_lat_links');
+    renderHistory();
+  } catch {}
+}
+
+function renderHistory() {
+  const list = getStoredLinks();
+  if (!list || list.length === 0) {
+    historySection.classList.remove('show');
+    historyList.innerHTML = '';
+    return;
+  }
+
+  historySection.classList.add('show');
+  historyList.innerHTML = '';
+
+  list.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'history-item';
+
+    const content = document.createElement('div');
+    content.className = 'history-content';
+
+    const link = document.createElement('a');
+    link.className = 'history-link';
+    link.href = item.short;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = item.short.replace(/^https?:\/\//, '');
+
+    const url = document.createElement('span');
+    url.className = 'history-url';
+    url.textContent = item.url;
+    url.title = item.url;
+
+    content.appendChild(link);
+    content.appendChild(url);
+
+    const actions = document.createElement('div');
+    actions.className = 'history-actions';
+
+    const cBtn = document.createElement('button');
+    cBtn.className = 'icon-btn';
+    cBtn.textContent = 'Copy';
+    cBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(item.short);
+        cBtn.textContent = 'Copied';
+        cBtn.classList.add('copied');
+        setTimeout(() => {
+          cBtn.textContent = 'Copy';
+          cBtn.classList.remove('copied');
+        }, 1500);
+      } catch {}
+    };
+
+    const eBtn = document.createElement('button');
+    eBtn.className = 'icon-btn';
+    eBtn.textContent = 'Edit';
+    eBtn.onclick = () => {
+      populateEditForm(item.id, item.url);
+      switchTab('edit');
+    };
+
+    const dBtn = document.createElement('button');
+    dBtn.className = 'icon-btn remove';
+    dBtn.textContent = '×';
+    dBtn.title = 'Remove from history';
+    dBtn.onclick = () => removeStoredLink(item.id);
+
+    actions.appendChild(cBtn);
+    actions.appendChild(eBtn);
+    actions.appendChild(dBtn);
+
+    row.appendChild(content);
+    row.appendChild(actions);
+    historyList.appendChild(row);
+  });
+}
+
+async function shorten() {
+  setShortenError('');
+  const rawUrl = urlInput.value.trim();
+  const rawKeyword = cleanSlug(keywordInput.value);
+
+  if (!rawUrl) {
+    setShortenError('Enter a URL first.');
     urlInput.focus();
     return;
   }
 
-  const normalized = isLikelyUrl(raw);
+  const normalized = isLikelyUrl(rawUrl);
   if (!normalized) {
-    setError("That doesn't look like a valid URL.");
+    setShortenError("That doesn't look like a valid URL.");
+    return;
+  }
+
+  if (rawKeyword && !/^[a-zA-Z0-9_-]{1,64}$/.test(rawKeyword)) {
+    setShortenError('Keyword can only contain letters, numbers, hyphens, and underscores.');
+    keywordInput.focus();
     return;
   }
 
@@ -324,44 +787,174 @@ async function shorten() {
   placeholder.style.display = 'block';
 
   try {
-    const res = await fetch('/api?url=' + encodeURIComponent(normalized));
-    if (!res.ok) throw new Error('bad status');
-    const data = await res.json();
-    if (!data || !data.short) throw new Error('no short link in response');
+    let endpoint = '/api?url=' + encodeURIComponent(normalized);
+    if (rawKeyword) {
+      endpoint += '&keyword=' + encodeURIComponent(rawKeyword);
+    }
 
+    const res = await fetch(endpoint);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to create link.');
+    }
+
+    if (!data || !data.short) {
+      throw new Error('No short link in response.');
+    }
+
+    currentCreatedLink = { id: data.id, short: data.short, url: normalized };
     shortLink.textContent = data.short;
     shortLink.href = data.short;
+
+    saveStoredLink(currentCreatedLink);
 
     placeholder.style.display = 'none';
     resultBox.classList.add('show');
   } catch (err) {
-    setError("Couldn't reach the end.lat API try again in a moment.");
+    setShortenError(err.message || "Couldn't reach the end.lat API. Try again in a moment.");
   } finally {
     goBtn.disabled = false;
     goBtn.textContent = 'Shorten';
   }
 }
 
-async function copyLink() {
-  const text = shortLink.textContent;
+function openInEditTab() {
+  if (currentCreatedLink) {
+    populateEditForm(currentCreatedLink.id, currentCreatedLink.url);
+    switchTab('edit');
+  }
+}
+
+function populateEditForm(id, url) {
+  editIdInput.value = id;
+  editUrlInput.value = url || '';
+  editNewKeywordInput.value = '';
+  setEditError('');
+  editResultBox.classList.remove('show');
+}
+
+async function fetchExistingLink() {
+  const slug = cleanSlug(editIdInput.value);
+  if (!slug) return;
+
+  try {
+    const res = await fetch('/api?action=get&id=' + encodeURIComponent(slug));
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.url && !editUrlInput.value.trim()) {
+        editUrlInput.value = data.url;
+      }
+    }
+  } catch {}
+}
+
+async function updateLink() {
+  setEditError('');
+  const slug = cleanSlug(editIdInput.value);
+  const rawUrl = editUrlInput.value.trim();
+  const rawNewKeyword = cleanSlug(editNewKeywordInput.value);
+
+  if (!slug) {
+    setEditError('Enter the short link or keyword to edit.');
+    editIdInput.focus();
+    return;
+  }
+
+  if (!rawUrl) {
+    setEditError('Enter the new destination URL.');
+    editUrlInput.focus();
+    return;
+  }
+
+  const normalized = isLikelyUrl(rawUrl);
+  if (!normalized) {
+    setEditError("That doesn't look like a valid URL.");
+    return;
+  }
+
+  if (rawNewKeyword && !/^[a-zA-Z0-9_-]{1,64}$/.test(rawNewKeyword)) {
+    setEditError('New keyword can only contain letters, numbers, hyphens, and underscores.');
+    editNewKeywordInput.focus();
+    return;
+  }
+
+  editBtn.disabled = true;
+  editBtn.textContent = 'Saving…';
+  editResultBox.classList.remove('show');
+
+  try {
+    let endpoint = '/api?action=edit&id=' + encodeURIComponent(slug) + '&url=' + encodeURIComponent(normalized);
+    if (rawNewKeyword) {
+      endpoint += '&newKeyword=' + encodeURIComponent(rawNewKeyword);
+    }
+
+    const res = await fetch(endpoint, { method: 'POST' });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to update link.');
+    }
+
+    const updatedItem = {
+      id: data.id,
+      short: data.short,
+      url: normalized
+    };
+
+    saveStoredLink(updatedItem);
+
+    editShortLink.textContent = data.short;
+    editShortLink.href = data.short;
+    editResultBox.classList.add('show');
+    setEditError('Link updated successfully!', true);
+
+    editIdInput.value = data.id;
+    editNewKeywordInput.value = '';
+  } catch (err) {
+    setEditError(err.message || "Couldn't update the link. Try again in a moment.");
+  } finally {
+    editBtn.disabled = false;
+    editBtn.textContent = 'Update Link';
+  }
+}
+
+async function copyLink(linkElemId, btnElemId) {
+  const linkElem = document.getElementById(linkElemId);
+  const btnElem = document.getElementById(btnElemId);
+  const text = linkElem ? linkElem.textContent : '';
   if (!text) return;
+
   try {
     await navigator.clipboard.writeText(text);
-    copyBtn.textContent = 'Copied';
-    copyBtn.classList.add('copied');
+    btnElem.textContent = 'Copied';
+    btnElem.classList.add('copied');
     setTimeout(() => {
-      copyBtn.textContent = 'Copy';
-      copyBtn.classList.remove('copied');
+      btnElem.textContent = 'Copy';
+      btnElem.classList.remove('copied');
     }, 1600);
   } catch {
-    copyBtn.textContent = 'Failed';
+    btnElem.textContent = 'Failed';
   }
 }
 
 urlInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') shorten();
 });
-urlInput.addEventListener('input', () => setError(''));
+keywordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') shorten();
+});
+editUrlInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') updateLink();
+});
+editNewKeywordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') updateLink();
+});
+
+urlInput.addEventListener('input', () => setShortenError(''));
+editUrlInput.addEventListener('input', () => setEditError(''));
+
+renderHistory();
 </script>
 </body>
 </html>
