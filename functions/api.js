@@ -1,6 +1,22 @@
 const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const RESERVED = new Set(["api", "functions", "assets", "favicon.ico", "robots.txt", "sitemap.xml", "index.html", "404"]);
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      ...CORS_HEADERS,
+    },
+  });
+}
+
 function makeId() {
   let id = "";
   for (let i = 0; i < 7; i++) {
@@ -71,22 +87,42 @@ async function handleApi(context) {
   const rawUrl = input.url ? input.url.trim() : "";
   const rawKeyword = input.keyword || input.custom || input.slug;
   const keyword = rawKeyword ? cleanKeyword(rawKeyword) : null;
+  const shouldRedirect = input.redirect === "true" || input.redirect === "1" || input.format === "redirect";
 
   if (!rawUrl) {
-    return Response.json({ error: "Missing 'url' parameter." }, { status: 400 });
+    return jsonResponse({
+      name: "end.lat API",
+      description: "Fast, minimal URL shortener with custom keywords. No signup required.",
+      endpoint: `${baseUrl}/api`,
+      method: "GET or POST",
+      parameters: {
+        url: "Destination URL to shorten (required, e.g. https://mygame.com/room/party-123)",
+        keyword: "Custom short slug (optional, e.g. cool-party)",
+        redirect: "If 'true', immediately 302 redirects to the generated short link (optional)"
+      },
+      party_room_example: {
+        description: "Generate a party or room link and share it with friends",
+        request: `${baseUrl}/api?url=https://mygame.com/room/party-123&keyword=cool-party`,
+        response: {
+          short: `${baseUrl}/cool-party`,
+          id: "cool-party",
+          url: "https://mygame.com/room/party-123"
+        }
+      }
+    }, 200);
   }
 
   if (!isUrl(rawUrl)) {
-    return Response.json({ error: "That's not a valid http(s) URL." }, { status: 400 });
+    return jsonResponse({ error: "That's not a valid http(s) URL." }, 400);
   }
 
   if (keyword) {
     if (!isValidKeyword(keyword)) {
-      return Response.json({ error: "Keywords can only contain letters, numbers, hyphens, and underscores (1-64 chars)." }, { status: 400 });
+      return jsonResponse({ error: "Keywords can only contain letters, numbers, hyphens, and underscores (1-64 chars)." }, 400);
     }
 
     if (RESERVED.has(keyword.toLowerCase())) {
-      return Response.json({ error: "That keyword is reserved." }, { status: 400 });
+      return jsonResponse({ error: "That keyword is reserved." }, 400);
     }
 
     const res = await fetch(`${env.SUPABASE_URL}/rest/v1/links`, {
@@ -101,15 +137,19 @@ async function handleApi(context) {
     });
 
     if (res.ok) {
-      return Response.json({ short: `${baseUrl}/${keyword}`, id: keyword, url: rawUrl }, { status: 201 });
+      const short = `${baseUrl}/${keyword}`;
+      if (shouldRedirect) {
+        return Response.redirect(short, 302);
+      }
+      return jsonResponse({ short, id: keyword, url: rawUrl }, 201);
     }
 
     if (res.status === 409) {
-      return Response.json({ error: "That keyword is already in use. Please choose another." }, { status: 409 });
+      return jsonResponse({ error: "That keyword is already in use. Please choose another." }, 409);
     }
 
     console.error(await res.text());
-    return Response.json({ error: "Could not create short link." }, { status: 500 });
+    return jsonResponse({ error: "Could not create short link." }, 500);
   }
 
   for (let i = 0; i < 5; i++) {
@@ -127,16 +167,20 @@ async function handleApi(context) {
     });
 
     if (res.ok) {
-      return Response.json({ short: `${baseUrl}/${id}`, id, url: rawUrl });
+      const short = `${baseUrl}/${id}`;
+      if (shouldRedirect) {
+        return Response.redirect(short, 302);
+      }
+      return jsonResponse({ short, id, url: rawUrl });
     }
 
     if (res.status !== 409) {
       console.error(await res.text());
-      return Response.json({ error: "Could not create short link." }, { status: 500 });
+      return jsonResponse({ error: "Could not create short link." }, 500);
     }
   }
 
-  return Response.json({ error: "Could not generate a unique id. Try again." }, { status: 500 });
+  return jsonResponse({ error: "Could not generate a unique id. Try again." }, 500);
 }
 
 export async function onRequestGet(context) {
@@ -145,4 +189,11 @@ export async function onRequestGet(context) {
 
 export async function onRequestPost(context) {
   return handleApi(context);
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS,
+  });
 }
