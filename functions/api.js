@@ -18,7 +18,7 @@ function isUrl(value) {
   }
 }
 
-function cleanId(raw) {
+function cleanKeyword(raw) {
   if (!raw) return "";
   let str = raw.trim();
   try {
@@ -41,7 +41,7 @@ async function parseInput(request) {
   const urlObj = new URL(request.url);
   const params = Object.fromEntries(urlObj.searchParams.entries());
 
-  if (request.method === "POST" || request.method === "PATCH") {
+  if (request.method === "POST") {
     const contentType = request.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       try {
@@ -67,109 +67,16 @@ async function handleApi(context) {
   const { request, env } = context;
   const baseUrl = env.SITE_URL || "https://end.lat";
   const input = await parseInput(request);
-  const action = (input.action || "").toLowerCase();
 
-  if (action === "get" || action === "info") {
-    const id = cleanId(input.id || input.keyword);
-    if (!id) {
-      return Response.json({ error: "Missing 'id' parameter." }, { status: 400 });
-    }
-
-    const res = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/links?id=eq.${encodeURIComponent(id)}&select=id,url`,
-      {
-        headers: {
-          apikey: env.SUPABASE_KEY,
-          Authorization: `Bearer ${env.SUPABASE_KEY}`,
-        },
-      }
-    );
-
-    if (res.ok) {
-      const rows = await res.json();
-      if (rows.length > 0) {
-        return Response.json({ id: rows[0].id, short: `${baseUrl}/${rows[0].id}`, url: rows[0].url });
-      }
-    }
-    return Response.json({ error: "Link not found." }, { status: 404 });
-  }
-
-  if (action === "edit" || request.method === "PATCH") {
-    const id = cleanId(input.id || input.keyword);
-    const newUrl = input.url ? input.url.trim() : "";
-    const rawNewKeyword = input.newKeyword || input.new_keyword || input.new_id;
-    const newKeyword = rawNewKeyword ? cleanId(rawNewKeyword) : null;
-
-    if (!id) {
-      return Response.json({ error: "Missing current link keyword or id." }, { status: 400 });
-    }
-
-    if (!newUrl) {
-      return Response.json({ error: "Missing destination 'url'." }, { status: 400 });
-    }
-
-    if (!isUrl(newUrl)) {
-      return Response.json({ error: "That's not a valid http(s) URL." }, { status: 400 });
-    }
-
-    const updateBody = { url: newUrl };
-
-    if (newKeyword && newKeyword !== id) {
-      if (!isValidKeyword(newKeyword)) {
-        return Response.json({ error: "New keyword must be 1-64 alphanumeric characters, dashes, or underscores." }, { status: 400 });
-      }
-      if (RESERVED.has(newKeyword.toLowerCase())) {
-        return Response.json({ error: "That keyword is reserved." }, { status: 400 });
-      }
-      updateBody.id = newKeyword;
-    }
-
-    const res = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/links?id=eq.${encodeURIComponent(id)}`,
-      {
-        method: "PATCH",
-        headers: {
-          apikey: env.SUPABASE_KEY,
-          Authorization: `Bearer ${env.SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          Prefer: "return=representation",
-        },
-        body: JSON.stringify(updateBody),
-      }
-    );
-
-    if (res.status === 409) {
-      return Response.json({ error: "The new keyword is already in use." }, { status: 409 });
-    }
-
-    if (!res.ok) {
-      console.error(await res.text());
-      return Response.json({ error: "Could not update short link." }, { status: 500 });
-    }
-
-    const updatedRows = await res.json();
-    if (!updatedRows || updatedRows.length === 0) {
-      return Response.json({ error: "Link not found." }, { status: 404 });
-    }
-
-    const finalId = updatedRows[0].id;
-    return Response.json({
-      success: true,
-      id: finalId,
-      short: `${baseUrl}/${finalId}`,
-      url: updatedRows[0].url,
-    });
-  }
-
-  const url = input.url ? input.url.trim() : "";
+  const rawUrl = input.url ? input.url.trim() : "";
   const rawKeyword = input.keyword || input.custom || input.slug;
-  const keyword = rawKeyword ? cleanId(rawKeyword) : null;
+  const keyword = rawKeyword ? cleanKeyword(rawKeyword) : null;
 
-  if (!url) {
+  if (!rawUrl) {
     return Response.json({ error: "Missing 'url' parameter." }, { status: 400 });
   }
 
-  if (!isUrl(url)) {
+  if (!isUrl(rawUrl)) {
     return Response.json({ error: "That's not a valid http(s) URL." }, { status: 400 });
   }
 
@@ -190,11 +97,11 @@ async function handleApi(context) {
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
-      body: JSON.stringify({ id: keyword, url }),
+      body: JSON.stringify({ id: keyword, url: rawUrl }),
     });
 
     if (res.ok) {
-      return Response.json({ short: `${baseUrl}/${keyword}`, id: keyword, url }, { status: 201 });
+      return Response.json({ short: `${baseUrl}/${keyword}`, id: keyword, url: rawUrl }, { status: 201 });
     }
 
     if (res.status === 409) {
@@ -216,11 +123,11 @@ async function handleApi(context) {
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
-      body: JSON.stringify({ id, url }),
+      body: JSON.stringify({ id, url: rawUrl }),
     });
 
     if (res.ok) {
-      return Response.json({ short: `${baseUrl}/${id}`, id, url });
+      return Response.json({ short: `${baseUrl}/${id}`, id, url: rawUrl });
     }
 
     if (res.status !== 409) {
@@ -237,9 +144,5 @@ export async function onRequestGet(context) {
 }
 
 export async function onRequestPost(context) {
-  return handleApi(context);
-}
-
-export async function onRequestPatch(context) {
   return handleApi(context);
 }
